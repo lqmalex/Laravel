@@ -76,7 +76,6 @@ desired effect
 -->
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
-
     <!-- Main Header -->
     <header class="main-header">
 
@@ -232,9 +231,15 @@ desired effect
                                 <div class="pull-left">
                                     <a href="#" class="btn btn-default btn-flat">Profile</a>
                                 </div>
-                                <div class="pull-right">
-                                    <a href="/login" class="btn btn-default btn-flat">登录/注册</a>
-                                </div>
+                                @if(session('user'))
+                                    <div class="pull-right">
+                                        <a href="/out" class="btn btn-default btn-flat">退出</a>
+                                    </div>
+                                @else
+                                    <div class="pull-right">
+                                        <a href="/login" class="btn btn-default btn-flat">登录/注册</a>
+                                    </div>
+                                @endif
                             </li>
                         </ul>
                     </li>

@@ -31,6 +31,20 @@ class StoreBlogPost extends FormRequest
         ];
     }
 
+    public function rules2($id = '') {
+        if ($id != '') {
+            return [
+                'name'=>'required|unique:user,name,'.$id,
+                'email'=>'required|email|unique:user,email,'.$id,
+            ];
+        } else {
+            return [
+                'name'=>'required',
+                'email'=>'required|email',
+            ];
+        }
+    }
+
     public function messages(){
         return [
             'name.required'=>'名称不能为空',

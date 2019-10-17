@@ -27,15 +27,15 @@
     <!-- /.content -->
 </div>
 <!-- /.content-wrapper -->
-<div class="box-bg">
-    <div class="box2">
-        <p>用户编辑</p>
-        <input type="hidden" class="inp-id">
-        名称:<input type="text" class="inp-name"><br>
-        邮箱:<input type="email" class="inp-email"><br>
-        <button class="toEdit btn btn-info btn-block" style="margin-top: 5px">编辑</button>
-    </div>
-</div>
+{{--<div class="box-bg">--}}
+{{--    <div class="box2">--}}
+{{--        <p>用户编辑</p>--}}
+{{--        <input type="hidden" class="inp-id">--}}
+{{--        名称:<input type="text" class="inp-name"><br>--}}
+{{--        邮箱:<input type="email" class="inp-email"><br>--}}
+{{--        <button class="toEdit btn btn-info btn-block" style="margin-top: 5px">编辑</button>--}}
+{{--    </div>--}}
+{{--</div>--}}
 <!-- Main Footer -->
 <footer class="main-footer">
     <!-- To the right -->

@@ -10,19 +10,19 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::get('/', 'UserApp\UserApp@selete');
+Route::get('/', 'UserController\UserController@select');
 
-Route::delete('/del/{id}', 'UserApp\UserApp@del');
+Route::delete('/del/{id}', 'UserController\UserController@del');
 
-Route::post('/edit','UserApp\UserApp@edit');
+Route::match(['get','post'],'/user/edit','UserController\UserController@edit');
 
 Route::get('/user/add',function(){
     return view('/UserAdd',['name'=>session('user')]);
 });
 
-Route::post('/add','UserApp\UserApp@userAdd');
+Route::post('/add','UserController\UserController@userAdd');
 
-Route::match(['get','post'],'/search','UserApp\UserApp@search');
+Route::match(['get','post'],'/search','UserController\UserController@search');
 
 Route::get('/login',function(){
     return view('/login');
@@ -32,6 +32,8 @@ Route::get('/reg',function (){
     return view('/register');
 });
 
-Route::post('/reg','UserApp\UserApp@userReg');
+Route::post('/reg','UserController\UserController@userReg');
 
-Route::post('/login','UserApp\UserApp@userLogin');
+Route::post('/login','UserController\UserController@userLogin');
+
+Route::get('/out','UserController\UserController@out');

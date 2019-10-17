@@ -21,8 +21,10 @@
                     <td class="name">{{$users[$i]->name}}</td>
                     <td class="email">{{$users[$i]->email}}</td>
                     <td>
-                        <button class="del btn btn-danger">删除</button>
-                        <button class="edit btn btn-info">编辑</button>
+                        @if($users[$i]->name != session('user') )
+                        <button class="delete btn btn-danger" data-toggle="modal" data-target="#myModal">删除</button>
+                        @endif
+                        <a href="/user/edit?id={{$users[$i]->id}}&name={{$users[$i]->name}}&email={{$users[$i]->email}}" class="btn btn-info">编辑</a>
                     </td>
                 </tr>
             @endfor
@@ -36,25 +38,47 @@
             {{ $users->appends(['name'=>$search])->links() }}
         @endif
     </div>
+
+    <!-- Modal -->
+    <div class="modal fade bs-example-modal-sm" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">确定删除?</h4>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary del" data-dismiss="modal">删除</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 @endsection
 @section('JavaScript')
     <script>
+        let DelId;
+        let DelDis;
+        $('.delete').click(function () {
+           // console.log($(this));
+            DelId = $(this).parents('tr').children('.id').html();
+            DelDis = $(this).parents('tr');
+        });
         $('.del').click(function () {
-            let id = $(this).parents('tr').children('.id').html();
-            let dis = $(this).parents('tr');
-
             $.ajax({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 type:"DELETE",
-                url:"/del/"+id,
+                url:"/del/"+DelId,
                 data:{},
                 dataType:'json',
                 success: function (data) {
                     if (data.type) {
                         alert(data.info);
-                        $(dis).css('display','none');
+                        $(DelDis).css('display','none');
                     } else {
                         alert(data.info);
                     }

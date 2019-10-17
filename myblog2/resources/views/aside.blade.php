@@ -17,10 +17,14 @@
         </div>
 
         <!-- search form (Optional) -->
-        <form action="/search" method="post"  class="sidebar-form">
+        <form action="/search" method="get"  class="sidebar-form">
             <input type="hidden" name="_token" value="{{ csrf_token() }}">
             <div class="input-group">
-                <input type="text" name="name" class="form-control" placeholder="Search...">
+                @if(session('searchName'))
+                    <input type="text" name="name" class="form-control" value="{{session('searchName')}}" placeholder="Search...">
+                @else
+                    <input type="text" name="name" class="form-control" placeholder="Search...">
+                @endif
                 <span class="input-group-btn">
               <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i>
               </button>
@@ -37,17 +41,6 @@
             <li class="active"><a href="/"><i class="fa fa-link"></i> <span>用户表</span></a></li>
             <li><a href="/user/add"><i class="fa fa-link"></i> <span>添加用户</span></a></li>
             @show
-            <li class="treeview">
-                <a href="#"><i class="fa fa-link"></i> <span>Multilevel</span>
-                    <span class="pull-right-container">
-                <i class="fa fa-angle-left pull-right"></i>
-              </span>
-                </a>
-                <ul class="treeview-menu">
-                    <li><a href="#">Link in level 2</a></li>
-                    <li><a href="#">Link in level 2</a></li>
-                </ul>
-            </li>
         </ul>
         <!-- /.sidebar-menu -->
     </section>

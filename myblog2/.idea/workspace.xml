@@ -29,7 +29,8 @@
     <select />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/app/Http/Controllers/UserApp/UserApp.php" root0="SKIP_INSPECTION" root1="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/app/Http/Controllers/UserController/UserController.php" root0="SKIP_INSPECTION" root1="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/resources/views/edit.blade.php" root0="SKIP_INSPECTION" root1="SKIP_INSPECTION" root2="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/resources/views/UserView.blade.php" root0="SKIP_INSPECTION" root1="SKIP_INSPECTION" root2="SKIP_INSPECTION" />
   </component>
   <component name="PhpWorkspaceProjectConfiguration">
@@ -170,7 +171,8 @@
       <workItem from="1571188112896" duration="10011000" />
       <workItem from="1571206619399" duration="6253000" />
       <workItem from="1571216368451" duration="1276000" />
-      <workItem from="1571225134860" duration="14153000" />
+      <workItem from="1571225134860" duration="15023000" />
+      <workItem from="1571284303336" duration="25079000" />
     </task>
     <servers />
   </component>

@@ -1,22 +1,24 @@
 <?php
 
-namespace App\Http\Controllers\UserApp;
+namespace App\Http\Controllers\UserController;
 
 use App\User;
 use App\UserModel as UserModel;
 use App\Http\Controllers\Controller;
 use Cassandra\Session;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use App\Http\Requests\StoreBlogPost as Store;
+use Illuminate\Support\Facades\DB;
+use Symfony\Component\Console\Input\Input;
 use Validator;
 
-class UserApp extends Controller{
+class UserController extends Controller{
     /**
      * 主页面
      * @return
      */
-    public function selete() {
+    public function select(Request $request) {
+        session()->forget('searchName');
         if (!empty(session()->has('user'))) {
             $sql = UserModel::Paginate(5);
             $name = session()->get('user');
@@ -32,6 +34,7 @@ class UserApp extends Controller{
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function search(Request $request) {
+        session()->put('searchName',$request->name);
         $sql = UserModel::where('name','like','%'.$request->name.'%')->Paginate(5);
         $search = $request->name;
 
@@ -67,20 +70,48 @@ class UserApp extends Controller{
      * @return false|string
      */
     public function edit(Request $request) {
-        $sql = UserModel::where('id','=',$request->all()['id'])->update(['name'=>$request->all()['name'],'email'=>$request->all()['email']]);
+        if (!$request->isMethod('get')) {
+            $stroe = new Store();
+            $request->validate($stroe->rules2($request->id),$stroe->messages());
 
-        if ($sql) {
-            $info = [
-                'type'=>true,
-                'info'=>"修改成功"
-            ];
-            return json_encode($info);
+            /*
+            PHP 闭包 ORM and or 优先级
+            $query = new UserModel();
+            $sql2 = $query->where('id','!=',$request->id)->where(function ($query) use ($request){
+                 $query->where('name','=',$request->name)->orWhere('email','=',$request->email);
+            })->get();
+
+            if (count($sql2) != 0) {
+                 return view('edit',['name'=>session('user'),'id'=>$request->id,'uname'=>$request->name,'email'=>$request->email]);
+            }
+            */
+
+            $sql = (new UserModel())::where('id','=',$request->id)->update(['name'=>$request->name,'email'=>$request->email]);
+
+            if ($sql) {
+                if (!empty(session()->has('userEdit'))) {
+                    session()->forget('user');
+                    session()->forget('userEdit');
+                    return redirect('/login');
+                } else {
+                    return redirect('/'.'?page='.$request->page);
+                }
+            } else {
+                session()->put('mes','未修改');
+                return view('edit',['name'=>session('user'),'id'=>$request->id,'uname'=>$request->name,'email'=>$request->email,'page'=>$request->page]);
+            }
         } else {
-            $info = [
-                'type'=>false,
-                'info'=>"修改失败",
-            ];
-            return json_encode($info);
+            if (url()->previous() == 'http://127.0.0.1:8080/') {
+                $page = 1;
+            } else {
+                $page = substr(url()->previous(),strripos(url()->previous(),'?')+6);
+            }
+
+            if ($request->name == session('user')) {
+                session()->put('userEdit',true);
+            }
+
+            return view('edit',['name'=>session('user'),'id'=>$request->id,'uname'=>$request->name,'email'=>$request->email,'page'=>$page]);
         }
     }
 
@@ -90,6 +121,7 @@ class UserApp extends Controller{
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
     public function userAdd(Store $request) {
+        session()->forget('searchName');
         $UserModel = new UserModel();
         $UserModel->name = $request->name;
         $UserModel->email = $request->email;
@@ -128,21 +160,27 @@ class UserApp extends Controller{
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
     public function userLogin(Request $request) {
-        $sql = UserModel::where(['name'=>$request->name,'email'=>$request->email])->get();
+        $sql = UserModel::where(['name'=>$request->name,'email'=>$request->email])->first();
 
-        if (count($sql) != 0) {
-            foreach ($sql as $key=>$val) {
-                $pass = $val->pass;
-                $pwd = decrypt($pass);
-                if ($pwd == $request->pass) {
-                    session()->put('user',$request->name);
-                    return redirect('/');
-                } else {
-                    return redirect('/login')->with('tip', '密码错误');
-                }
+        if ($sql != null) {
+            if ($request->pass == decrypt($sql->pass)) {
+                session()->put('user',$request->name);
+                return redirect('/');
+            } else {
+                return redirect('/login')->with('tip', '密码错误');
             }
         } else {
             return redirect('/login')->with('tip', '请查看用户名和邮箱是否正确');
         }
+    }
+
+    /**
+     * 退出
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
+    public function out() {
+        session()->forget('searchName');
+        session()->forget('user');
+        return redirect('/');
     }
 }
