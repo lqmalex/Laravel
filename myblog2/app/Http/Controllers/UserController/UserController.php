@@ -101,7 +101,7 @@ class UserController extends Controller{
                 return view('edit',['name'=>session('user'),'id'=>$request->id,'uname'=>$request->name,'email'=>$request->email,'page'=>$request->page]);
             }
         } else {
-            if (url()->previous() == 'http://127.0.0.1:8080/') {
+            if (substr(url()->previous(),strripos(url()->previous(),'?')+1,4) != 'page') {
                 $page = 1;
             } else {
                 $page = substr(url()->previous(),strripos(url()->previous(),'?')+6);
