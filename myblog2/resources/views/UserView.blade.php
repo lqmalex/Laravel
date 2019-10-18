@@ -22,9 +22,10 @@
                     <td class="email">{{$users[$i]->email}}</td>
                     <td>
                         @if($users[$i]->name != session('user') )
-                        <button class="delete btn btn-danger" data-toggle="modal" data-target="#myModal">删除</button>
+                            <button class="delete btn btn-danger" data-toggle="modal" data-target="#myModal">删除</button>
                         @endif
-                        <a href="/user/edit?id={{$users[$i]->id}}&name={{$users[$i]->name}}&email={{$users[$i]->email}}" class="btn btn-info">编辑</a>
+                        <a href="/user/edit?id={{$users[$i]->id}}&name={{$users[$i]->name}}&email={{$users[$i]->email}}&page={{$page}}&search={{$search}}"
+                           class="btn btn-info">编辑</a>
                     </td>
                 </tr>
             @endfor
@@ -44,7 +45,8 @@
         <div class="modal-dialog modal-sm" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title" id="myModalLabel">确定删除?</h4>
                 </div>
 
@@ -62,7 +64,7 @@
         let DelId;
         let DelDis;
         $('.delete').click(function () {
-           // console.log($(this));
+            // console.log($(this));
             DelId = $(this).parents('tr').children('.id').html();
             DelDis = $(this).parents('tr');
         });
@@ -71,19 +73,19 @@
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
-                type:"DELETE",
-                url:"/del/"+DelId,
-                data:{},
-                dataType:'json',
+                type: "DELETE",
+                url: "/del/" + DelId,
+                data: {},
+                dataType: 'json',
                 success: function (data) {
                     if (data.type) {
                         alert(data.info);
-                        $(DelDis).css('display','none');
+                        $(DelDis).css('display', 'none');
                     } else {
                         alert(data.info);
                     }
                 },
-                error:function(err){
+                error: function (err) {
                     console.log("错误");
                 }
             })
@@ -97,7 +99,7 @@
             name = $(this).parents('tr').children('.name');
             email = $(this).parents('tr').children('.email');
 
-            $('.box-bg').css('display','block');
+            $('.box-bg').css('display', 'block');
             $('.inp-name').val($(name[0]).html());
             $('.inp-email').val($(email[0]).html());
             $('.inp-id').val($(id[0]).html());
@@ -114,23 +116,23 @@
                 },
                 type: 'POST',
                 url: '/edit',
-                data:{
-                    'id':id,
-                    'name':nameVal,
-                    'email':emailVal
+                data: {
+                    'id': id,
+                    'name': nameVal,
+                    'email': emailVal
                 },
-                dataType:'json',
-                success:function (data) {
+                dataType: 'json',
+                success: function (data) {
                     if (data.type) {
                         name.html(nameVal);
                         email.html(emailVal);
-                        $('.box-bg').css('display','none');
+                        $('.box-bg').css('display', 'none');
                         alert(data.info);
                     } else {
                         alert(data.info);
                     }
                 },
-                error:function (err) {
+                error: function (err) {
                     console.log('错误');
                 }
             })

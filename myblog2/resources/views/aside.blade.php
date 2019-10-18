@@ -17,11 +17,12 @@
         </div>
 
         <!-- search form (Optional) -->
-        <form action="/search" method="get"  class="sidebar-form">
+        <form action="/search" method="post" class="sidebar-form">
             <input type="hidden" name="_token" value="{{ csrf_token() }}">
             <div class="input-group">
                 @if(session('searchName'))
-                    <input type="text" name="name" class="form-control" value="{{session('searchName')}}" placeholder="Search...">
+                    <input type="text" name="name" class="form-control" value="{{session('searchName')}}"
+                           placeholder="Search...">
                 @else
                     <input type="text" name="name" class="form-control" placeholder="Search...">
                 @endif
@@ -38,8 +39,8 @@
             <li class="header">HEADER</li>
             <!-- Optionally, you can add icons to the links -->
             @section('active')
-            <li class="active"><a href="/"><i class="fa fa-link"></i> <span>用户表</span></a></li>
-            <li><a href="/user/add"><i class="fa fa-link"></i> <span>添加用户</span></a></li>
+                <li class="active"><a href="/"><i class="fa fa-link"></i> <span>用户表</span></a></li>
+                <li><a href="/user/add"><i class="fa fa-link"></i> <span>添加用户</span></a></li>
             @show
         </ul>
         <!-- /.sidebar-menu -->

@@ -31,21 +31,23 @@
             <!-- form start -->
             <form class="form-horizontal" action="/user/edit" method="post">
                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                <input type="hidden" name="id" value="{{ $id }}">
-                <input type="hidden" name="page" value="{{ $page }}">
+                <input type="hidden" name="search" value="{{ old('search') }}">
+                <input type="hidden" name="id" value="{{ old('id') }}">
+                <input type="hidden" name="page" value="{{ old('page') }}">
                 <div class="box-body">
                     <div class="form-group">
                         <label class="col-sm-2 control-label">名称</label>
 
                         <div class="col-sm-10">
-                            <input type="text" name="name" value="{{$uname}}" class="form-control">
+                            <input type="text" name="name" value="{{old('name')}}" class="form-control">
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="inputPassword3" class="col-sm-2 control-label">邮箱</label>
 
                         <div class="col-sm-10">
-                            <input type="email" name="email" value="{{$email}}" class="form-control" id="inputPassword3">
+                            <input type="email" name="email" value="{{old('email')}}" class="form-control"
+                                   id="inputPassword3">
                         </div>
                     </div>
                     <div class="form-group">

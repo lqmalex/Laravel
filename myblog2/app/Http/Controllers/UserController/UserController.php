@@ -12,20 +12,23 @@ use Illuminate\Support\Facades\DB;
 use Symfony\Component\Console\Input\Input;
 use Validator;
 
-class UserController extends Controller{
+class UserController extends Controller
+{
     /**
      * 主页面
      * @return
      */
-    public function select(Request $request) {
+    public function select(Request $request)
+    {
         session()->forget('searchName');
-        if (!empty(session()->has('user'))) {
-            $sql = UserModel::Paginate(5);
-            $name = session()->get('user');
-            return view('UserView',['users'=>$sql,'search'=>'','name'=>$name]);
+        $sql = UserModel::Paginate(5);
+        $name = session()->get('user');
+        if (substr(url()->full(), strripos(url()->full(), '?') + 1, 4) != 'page') {
+            $page = 1;
         } else {
-            return redirect('/login');
+            $page = substr(url()->full(), strripos(url()->full(), '?') + 6);
         }
+        return view('UserView', ['users' => $sql, 'search' => '', 'name' => $name, 'page' => $page]);
     }
 
     /**
@@ -33,12 +36,22 @@ class UserController extends Controller{
      * @param Request $request
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function search(Request $request) {
-        session()->put('searchName',$request->name);
-        $sql = UserModel::where('name','like','%'.$request->name.'%')->Paginate(5);
+    public function search(Request $request)
+    {
+        session()->put('searchName', $request->name);
+        $sql = UserModel::where('name', 'like', '%' . $request->name . '%')->Paginate(5);
         $search = $request->name;
+        if (strripos(url()->full(), '&') != false) {
+            if (substr(url()->full(), strripos(url()->full(), '&') + 1, 4) != 'page') {
+                $page = 1;
+            } else {
+                $page = substr(url()->full(), strripos(url()->full(), '&') + 6);
+            }
+        } else {
+            $page = 1;
+        }
 
-        return view('UserView',['users'=>$sql,'search'=>$search,'name'=>session('user')]);
+        return view('UserView', ['users' => $sql, 'search' => $search, 'name' => session('user'), 'page' => $page]);
     }
 
     /**
@@ -46,19 +59,20 @@ class UserController extends Controller{
      * @param $id
      * @return false|string
      */
-    public function del($id) {
+    public function del($id)
+    {
         $sql = UserModel::destroy($id);
 
         if ($sql) {
             $info = [
-                'type'=>true,
-                'info'=>"删除成功",
+                'type' => true,
+                'info' => "删除成功",
             ];
             return json_encode($info);
         } else {
             $info = [
-                'type'=>false,
-                'info'=>"删除失败",
+                'type' => false,
+                'info' => "删除失败",
             ];
             return json_encode($info);
         }
@@ -69,10 +83,12 @@ class UserController extends Controller{
      * @param Request $request
      * @return false|string
      */
-    public function edit(Request $request) {
+    public function edit(Request $request)
+    {
         if (!$request->isMethod('get')) {
+            $request->flash();
             $stroe = new Store();
-            $request->validate($stroe->rules2($request->id),$stroe->messages());
+            $request->validate($stroe->rules2($request->id), $stroe->messages());
 
             /*
             PHP 闭包 ORM and or 优先级
@@ -86,7 +102,7 @@ class UserController extends Controller{
             }
             */
 
-            $sql = (new UserModel())::where('id','=',$request->id)->update(['name'=>$request->name,'email'=>$request->email]);
+            $sql = (new UserModel())::where('id', '=', $request->id)->update(['name' => $request->name, 'email' => $request->email]);
 
             if ($sql) {
                 if (!empty(session()->has('userEdit'))) {
@@ -94,24 +110,23 @@ class UserController extends Controller{
                     session()->forget('userEdit');
                     return redirect('/login');
                 } else {
-                    return redirect('/'.'?page='.$request->page);
+                    if ($request->search != null) {
+                        return redirect('/search?name=' . $request->search . '&page=' . $request->page);
+                    } else {
+                        return redirect('/' . '?page=' . old('page'));
+                    }
                 }
             } else {
-                session()->put('mes','未修改');
-                return view('edit',['name'=>session('user'),'id'=>$request->id,'uname'=>$request->name,'email'=>$request->email,'page'=>$request->page]);
+                session()->put('mes', '未修改');
+                return view('edit', ['name' => session('user'), 'id' => $request->id, 'uname' => $request->name, 'email' => $request->email, 'page' => $request->page, 'search' => $request->search]);
             }
         } else {
-            if (substr(url()->previous(),strripos(url()->previous(),'?')+1,4) != 'page') {
-                $page = 1;
-            } else {
-                $page = substr(url()->previous(),strripos(url()->previous(),'?')+6);
-            }
-
             if ($request->name == session('user')) {
-                session()->put('userEdit',true);
+                session()->put('userEdit', true);
             }
 
-            return view('edit',['name'=>session('user'),'id'=>$request->id,'uname'=>$request->name,'email'=>$request->email,'page'=>$page]);
+            $request->flash();
+            return view('edit', ['name' => session('user'), 'id' => $request->id, 'uname' => $request->name, 'email' => $request->email, 'page' => $request->page, 'search' => $request->search]);
         }
     }
 
@@ -120,7 +135,8 @@ class UserController extends Controller{
      * @param Store $request
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    public function userAdd(Store $request) {
+    public function userAdd(Store $request)
+    {
         session()->forget('searchName');
         $UserModel = new UserModel();
         $UserModel->name = $request->name;
@@ -141,7 +157,8 @@ class UserController extends Controller{
      * @param Store $request
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    public function userReg(Store $request) {
+    public function userReg(Store $request)
+    {
         $UserMode = new UserModel();
         $UserMode->name = $request->name;
         $UserMode->email = $request->email;
@@ -159,12 +176,13 @@ class UserController extends Controller{
      * @param Request $request
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    public function userLogin(Request $request) {
-        $sql = UserModel::where(['name'=>$request->name,'email'=>$request->email])->first();
+    public function userLogin(Request $request)
+    {
+        $sql = UserModel::where(['name' => $request->name, 'email' => $request->email])->first();
 
         if ($sql != null) {
             if ($request->pass == decrypt($sql->pass)) {
-                session()->put('user',$request->name);
+                session()->put('user', $request->name);
                 return redirect('/');
             } else {
                 return redirect('/login')->with('tip', '密码错误');
@@ -178,7 +196,8 @@ class UserController extends Controller{
      * 退出
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    public function out() {
+    public function out()
+    {
         session()->forget('searchName');
         session()->forget('user');
         return redirect('/');

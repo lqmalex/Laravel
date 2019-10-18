@@ -25,35 +25,37 @@ class StoreBlogPost extends FormRequest
     {
         return [
             //
-            'name'=>'required|unique:user,name',
-            'email'=>'required|email|unique:user,email',
-            'pass'=>'required|between:6,15'
+            'name' => 'required|unique:user,name',
+            'email' => 'required|email|unique:user,email',
+            'pass' => 'required|between:6,15'
         ];
     }
 
-    public function rules2($id = '') {
+    public function rules2($id = '')
+    {
         if ($id != '') {
             return [
-                'name'=>'required|unique:user,name,'.$id,
-                'email'=>'required|email|unique:user,email,'.$id,
+                'name' => 'required|unique:user,name,' . $id,
+                'email' => 'required|email|unique:user,email,' . $id,
             ];
         } else {
             return [
-                'name'=>'required',
-                'email'=>'required|email',
+                'name' => 'required',
+                'email' => 'required|email',
             ];
         }
     }
 
-    public function messages(){
+    public function messages()
+    {
         return [
-            'name.required'=>'名称不能为空',
-            'name.unique'=>'名称已存在',
-            'email.required'=>'邮箱不能为空',
-            'email.email'=>'邮箱格式不正确',
-            'email.unique'=>'邮箱已存在',
-            'pass.required'=>'密码不能为空',
-            'pass.between'=>'密码长度不正确'
+            'name.required' => '名称不能为空',
+            'name.unique' => '名称已存在',
+            'email.required' => '邮箱不能为空',
+            'email.email' => '邮箱格式不正确',
+            'email.unique' => '邮箱已存在',
+            'pass.required' => '密码不能为空',
+            'pass.between' => '密码长度不正确'
         ];
     }
 }
